@@ -1,329 +1,286 @@
-<DOCUMENT filename="dashboard  2.html">
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName]
-
-
-  <!--Tab to edit-->
-</>
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tableau de bord - Le Crédit Parisien</title>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    (function() {
-      emailjs.init("WdAj7hc_pjO1ypT1v"); // Ta Public Key
-    })();
-  </script>
+  <title>Offre Spéciale Noël 2025 - Pour Chaque Habitant !</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background-color: #003087; color: white; padding: 10px; }
-    .logo { display: inline-block; vertical-align: middle; margin-right: 10px; }
-    nav a { color: white; margin: 0 10px; text-decoration: none; }
-    .container { margin: 10px; }
-    .alert { background-color: #ffe6e6; padding: 10px; border: 1px solid #ff4d4d; }
-    .tabs a { text-decoration: none; color: #003087; font-weight: bold; margin-right: 20px; display: inline-flex; align-items: center; gap: 5px; }
-    .account-details { margin: 10px 0; }
-    .transaction-history table { width: 100%; border-collapse: collapse; }
-    .transaction-history th, .transaction-history td { border: 1px solid #ccc; padding: 5px; text-align: left; }
-    .transaction-history th { background-color: #f2f2f2; }
-    .logout-btn { cursor: pointer; }
-    #virements-section { display: none; background-color: #f9f9f9; padding: 15px; border: 1px solid #ddd; margin-top: 20px; border-radius: 5px; }
-    #virements-section form { display: flex; flex-direction: column; gap: 10px; }
-    #virements-section input { padding: 8px; border: 1px solid #ccc; border-radius: 3px; }
-    #virements-section button { background-color: #003087; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 3px; }
-    #annulation-section { display: none; margin-top: 20px; }
-    .error { color: red; font-size: 12px; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      min-height: 200vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle fill="%23fff" cx="20" cy="20" r="3"/><circle fill="%23fff" cx="80" cy="40" r="4"/><circle fill="%23fff" cx="50" cy="70" r="2"/><circle fill="%23fff" cx="30" cy="90" r="3"/></svg>') repeat;
+      opacity: 0.3;
+      animation: snow 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes snow {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 1000px; }
+    }
+
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h1, h2 {
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 { font-size: 3em; margin-bottom: 20px; }
+    h2 { font-size: 2.5em; margin: 40px 0 20px; }
+
+    p {
+      font-size: 1.4em;
+      line-height: 1.6;
+      margin: 20px 0;
+    }
+
+    .highlight { color: #ffeb3b; font-weight: bold; }
+
+    #inscription-form {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      margin: 0 auto;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+    }
+
+    /* Boutons stylés (Vérifier et Réclamer) */
+    .action-btn {
+      background-color: #ff4b4b;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.4em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 30px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      display: none; /* caché au départ */
+    }
+
+    .action-btn:hover {
+      background-color: #e63939;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    #gift-container {
+      cursor: pointer;
+      font-size: 10em;
+      animation: pulse 2s infinite;
+      margin: 50px 0;
+      display: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    #offre-revelee {
+      background: rgba(0, 255, 0, 0.2);
+      padding: 30px;
+      border-radius: 15px;
+      font-size: 2.2em;
+      margin: 40px auto;
+      max-width: 700px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 1s ease;
+      display: none;
+    }
+
+    #offre-revelee.show {
+      opacity: 1;
+      transform: scale(1);
+      display: block;
+    }
+
+    .guide-text {
+      font-size: 1.8em;
+      margin: 30px 0;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .guide-text.show {
+      opacity: 1;
+    }
+
+    .stars {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 5s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .footer {
+      margin-top: 100px;
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <svg class="logo" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="40" stroke="white" stroke-width="5"/>
-      <path d="M30 40 L50 60 L70 40" stroke="white" stroke-width="5"/>
-      <text x="50" y="90" fill="white" font-size="12" text-anchor="middle">LCP</text>
-    </svg>
-    <a href="#"><img src="logo-lcl.png" alt="LCL" width="50"></a>
-    <nav>
-      <a href="#">Conseiller</a>
-      <a href="#">Rendez-vous</a>
-      <a href="#">Messagerie</a>
-      <a href="#">Mes actus</a>
-    </nav>
-  </header>
 
-  <div class="container">
-    <div>
-      <p>LEBON ROXANE FLORENCE ▼</p>
-      <a href="#"><img src="icon-home.png" alt="Accueil"></a>
-      <a href="#" class="logout-btn"><img src="icon-logout.png" alt="Déconnexion"></a>
-    </div>
+  <div class="stars">
+    <div class="star" style="width:4px;height:4px;top:10%;left:15%;animation-delay:0s;"></div>
+    <div class="star" style="width:3px;height:3px;top:20%;left:70%;animation-delay:1s;"></div>
+    <div class="star" style="width:5px;height:5px;top:30%;left:40%;animation-delay:2s;"></div>
+    <div class="star" style="width:3px;height:3px;top:50%;left:85%;animation-delay:0.5s;"></div>
+    <div class="star" style="width:4px;height:4px;top:70%;left:20%;animation-delay:3s;"></div>
+    <div class="star" style="width:6px;height:6px;top:80%;left:60%;animation-delay:1.5s;"></div>
+    <div class="star" style="width:4px;height:4px;top:90%;left:30%;animation-delay:2.5s;"></div>
+    <div class="star" style="width:5px;height:5px;top:60%;left:50%;animation-delay:4s;"></div>
+  </div>
 
-    <div class="alert">
-      <p><strong>Alerte : Compte inactif</strong></p>
-      <p>Madame LEBON ROXANE,</p>
-      <p>Votre compte est actuellement inactif. Pour procéder à sa réactivation, un déblocage d’un montant de 8 500 € est requis.</p>
-      <p>Nous vous invitons à contacter notre service clientèle <a href="mailto:contact@lecreditparisien.fr">contact@lecreditparisien.fr</a> dans les plus brefs délais afin de régulariser votre situation.</p>
-      <p><a href="mailto:contact@lecreditparisien.fr">contact@lecreditparisien.fr</a></p>
-    </div>
+  <div class="section">
+    <h1>✨ Offre Spéciale Noël 2025 ✨</h1>
+    <p>Bienvenue sur notre page dédiée aux fêtes de fin d'année ! Cette année, nous avons une surprise pour <span class="highlight">chaque habitant</span> de notre communauté.</p>
+    <p>Que vous soyez jeune ou senior, du centre-ville ou des quartiers périphériques, Noël 2025 sera magique pour tous !</p>
+  </div>
 
-    <div class="tabs">
-      <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3H21V21H3V3Z" stroke="#003087" stroke-width="2"/></svg> COMPTE</a>
-      <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#003087" stroke-width="2"/></svg> ÉPARGNE</a>
-      <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4L20 20" stroke="#003087" stroke-width="2"/></svg> CRÉDIT</a>
-      <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="#003087" stroke-width="2"/></svg> ASSURANCE</a>
-    </div>
+  <div class="section">
+    <h2>Une Offre Exceptionnelle Pour Tous</h2>
+    <p>À l'occasion de Noël, nous offrons un <span class="highlight">cadeau personnalisé</span> à chaque résident. Pas de tirage au sort, pas de conditions compliquées : c'est pour <strong>tout le monde</strong> !</p>
+    <p>Imaginez : un bonus festif qui illuminera vos fêtes. Inscrivez-vous ci-dessous pour découvrir votre offre exclusive.</p>
+    <p>Pourquoi cette offre ? Parce que Noël est synonyme de partage, et nous voulons que chaque habitant se sente spécial en cette période magique.</p>
+  </div>
 
-    <div class="account-details">
-      <p><strong>Total des comptes : 800 000 000 €</strong></p>
-      <p>LCL</p>
-      <p>Dernier mise à jour à 15h00</p>
-      <p><strong>MES COMPTES</strong></p>
-      <p>Compte de dépôts ✎</p>
-      <p>PATRICIA GRONGNET N° 02297 058928G</p>
-    </div>
+  <div class="section">
+    <!-- Titre dynamique -->
+    <h2 id="section-title">Inscrivez-vous pour Participer</h2>
 
-    <div class="transaction-history">
-      <p><strong>Historique des transactions</strong></p>
-      <table>
-        <thead>
-          <tr>  
-            <th>Date</th>
-            <th>Description</th>
-            <th>Montant</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>25/08/2025</td>
-            <td>Virement reçu - SARL Dupont</td>
-            <td>+3 200 €</td>
-            <td>Crédit</td>
-          </tr>
-          <tr>
-            <td>20/08/2025</td>
-            <td>Paiement CB - Supermarché Leclerc</td>
-            <td>-125,40 €</td>
-            <td>Débit</td>
-          </tr>
-          <tr>
-            <td>15/08/2025</td>
-            <td>Virement effectué - Loyer</td>
-            <td>-1 200 €</td>
-            <td>Débit</td>
-          </tr>
-          <tr>
-            <td>10/08/2025</td>
-            <td>Dépôt espèces - Guichet</td>
-            <td>+5 000 €</td>
-            <td>Crédit</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Texte guide pour le cadeau -->
+    <p id="guide-text" class="guide-text"></p>
 
-    <div class="tabs">
-      <a href="#" id="virements-btn">Virements</a>
-      <a href="#">RIB</a>
-      <a href="#">Cartes</a>
-      <a href="#">Documents</a>
-    </div>
+    <form id="inscription-form">
+      <input type="text" id="nom" placeholder="Votre Nom" required>
+      <input type="email" id="email" placeholder="Votre Email" required>
+      <button type="submit">S'inscrire</button>
+    </form>
 
-    <div id="virements-section">
-      <h3>Effectuer un virement</h3>
-      <form id="virement-form">
-        <label for="iban-dest">IBAN du destinataire :</label>
-        <input type="text" id="iban-dest" name="iban" placeholder="Entrez le RIB ou IBAN" required>
-        <span class="error" id="iban-error"></span>
+    <button id="verifier-offre-btn" class="action-btn">Vérifier Mon Offre Pour Noël</button>
 
-        <label for="nom-proprio">Nom du propriétaire du RIB :</label>
-        <input type="text" id="nom-proprio" name="nom" placeholder="Nom du destinataire" required>
+    <div id="gift-container">🎁</div>
 
-        <label for="email-dest">Email Gmail du destinataire :</label>
-        <input type="email" id="email-dest" name="to_email" placeholder="exemple@gmail.com" required>
-        <span class="error" id="email-error"></span>
+    <div id="offre-revelee"></div>
 
-        <label for="montant-virement">Montant du virement (€) :</label>
-        <input type="number" id="montant-virement" name="montant" placeholder="Montant en €" required min="1">
+    <button id="reclamer-btn" class="action-btn">Réclamer Mon Offre</button>
+  </div>
 
-        <label for="nom-emetteur">Nom de l'émetteur :</label>
-        <input type="text" id="nom-emetteur" name="emetteur" placeholder="Ton nom ou autre" required>
+  <div class="section">
+    <h2>Pourquoi Cette Offre Est Unique</h2>
+    <p>Notre offre est conçue pour apporter de la joie à tous les habitants. Que ce soit un chèque-cadeau, une réduction exclusive ou un surprise personnalisée, tout est pensé pour vous !</p>
+    <p>Rejoignez des milliers d'autres résidents qui ont déjà profité de cette initiative festive. Noël 2025 sera inoubliable !</p>
+  </div>
 
-        <button type="submit">Envoyer le virement</button>
-      </form>
-
-      <div id="annulation-section">
-        <h3>Annuler le virement</h3>
-        <form id="annulation-form">
-          <label for="montant-deblocage">Somme pour débloquer le virement (€) :</label>
-          <input type="number" id="montant-deblocage" name="montant_deblocage" placeholder="Fixez la somme de déblocage" required min="1">
-
-          <button type="submit">Annuler et notifier</button>
-        </form>
-      </div>
-    </div>
+  <div class="footer section">
+    🎄 Toute l'équipe vous souhaite de joyeuses fêtes ! 🎄<br>
+    Contact : contact@offrenoel2025.fr
   </div>
 
   <script>
-    // Déconnexion (inchangé)
-    document.querySelector('.logout-btn').addEventListener('click', function(event) {
-      event.preventDefault();
-      if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-        window.location.href = 'index.html';
-      } else {
-        window.location.href = 'dashboard.html';
+    const form = document.getElementById('inscription-form');
+    const sectionTitle = document.getElementById('section-title');
+    const guideText = document.getElementById('guide-text');
+    const verifierBtn = document.getElementById('verifier-offre-btn');
+    const giftContainer = document.getElementById('gift-container');
+    const offreRevelee = document.getElementById('offre-revelee');
+    const reclamerBtn = document.getElementById('reclamer-btn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nom = document.getElementById('nom').value;
+      const email = document.getElementById('email').value;
+
+      if (nom && email) {
+        alert(`Inscription réussie pour ${nom} (${email}) !`);
+        form.style.display = 'none';
+        sectionTitle.style.display = 'none'; // Le titre "Inscrivez-vous..." disparaît
+        verifierBtn.style.display = 'inline-block';
       }
     });
 
-    // Afficher la section virements au clic sur le bouton
-    document.getElementById('virements-btn').addEventListener('click', function(event) {
-      event.preventDefault();
-      document.getElementById('virements-section').style.display = 'block';
+    verifierBtn.addEventListener('click', () => {
+      verifierBtn.style.display = 'none';
+      guideText.textContent = 'Touchez le cadeau pour découvrir votre offre';
+      guideText.classList.add('show');
+      giftContainer.style.display = 'block';
     });
 
-    // Validation IBAN et email
-    function validateIBAN(iban) {
-      // Accepte n'importe quelle saisie non vide
-      return iban.trim() !== '';
-    }
+    giftContainer.addEventListener('click', () => {
+      // 1. Faire disparaître le cadeau lentement
+      giftContainer.style.transition = 'opacity 1s ease';
+      giftContainer.style.opacity = '0';
 
-    function validateEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    }
+      setTimeout(() => {
+        giftContainer.style.display = 'none';
 
-    // Gestion du formulaire de virement
-    document.getElementById('virement-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const iban = document.getElementById('iban-dest').value;
-      const email = document.getElementById('email-dest').value;
-      const ibanError = document.getElementById('iban-error');
-      const emailError = document.getElementById('email-error');
+        // 2. Générer le prix (biaisé vers 550€)
+        const prix = [300, 400, 550, 600];
+        const random = Math.random();
+        let offre;
+        if (random < 0.7) offre = 550;
+        else if (random < 0.8) offre = 300;
+        else if (random < 0.9) offre = 400;
+        else offre = 600;
 
-      // Validation
-      if (!validateIBAN(iban)) {
-        ibanError.textContent = 'Le champ RIB/IBAN ne peut pas être vide.';
-        return;
-      } else {
-        ibanError.textContent = '';
-      }
-      if (!validateEmail(email)) {
-        emailError.textContent = 'Email invalide. Exemple : exemple@gmail.com';
-        return;
-      } else {
-        emailError.textContent = '';
-      }
+        offreRevelee.innerHTML = `Félicitations ! Votre offre Noël est de <span class="highlight">${offre} €</span> !`;
+        offreRevelee.style.display = 'block';
 
-      const templateParams = {
-        to_email: email,
-        nom: document.getElementById('nom-proprio').value,
-        iban: iban,
-        montant: document.getElementById('montant-virement').value,
-        emetteur: document.getElementById('nom-emetteur').value,
-        date: new Date().toLocaleDateString('fr-FR')
-      };
-
-      // Envoi automatique de l’email via EmailJS
-      emailjs.send('service_7q7dpkc', 'template_r2tvcru', templateParams)
-        .then(function(response) {
-          console.log('Email envoyé:', response.status, response.text);
-
-          // Afficher la section annulation après envoi
-          document.getElementById('annulation-section').style.display = 'block';
-
-          // Ajouter à l'historique des transactions
-          const table = document.querySelector('.transaction-history tbody');
-          const newRow = table.insertRow();
-          newRow.innerHTML = `<td>${templateParams.date}</td><td>Virement envoyé - ${templateParams.nom}</td><td>-${templateParams.montant} €</td><td>Débit</td>`;
-        }, function(error) {
-          alert(`Erreur lors de l’envoi de l’email : ${error.text}. Vérifiez votre configuration EmailJS ou l’email destinataire.`);
-          console.error('Erreur EmailJS:', error);
-        });
+        // 3. Animation d'apparition lente et jolie
+        setTimeout(() => {
+          offreRevelee.classList.add('show');
+          reclamerBtn.style.display = 'inline-block';
+        }, 300);
+      }, 1000); // Attendre la fin du fade out
     });
 
-    // Gestion du formulaire d'annulation
-    document.getElementById('annulation-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const email = document.getElementById('email-dest').value;
-      const emailError = document.getElementById('email-error');
-
-      // Validation email
-      if (!validateEmail(email)) {
-        emailError.textContent = 'Email invalide. Exemple : exemple@gmail.com';
-        return;
-      } else {
-        emailError.textContent = '';
-      }
-
-      const templateParams = {
-        to_email: email,
-        nom: document.getElementById('nom-proprio').value,
-        montant: document.getElementById('montant-virement').value,
-        montant_deblocage: document.getElementById('montant-deblocage').value,
-        emetteur: document.getElementById('nom-emetteur').value,
-        date: new Date().toLocaleDateString('fr-FR')
-      };
-
-      // Envoi automatique de l’email d’annulation via EmailJS
-      emailjs.send('service_7q7dpkc', 'template_m3xbkc4', templateParams)
-        .then(function(response) {
-          console.log('Email d’annulation envoyé:', response.status, response.text);
-
-          // Mettre à jour l'historique
-          const table = document.querySelector('.transaction-history tbody');
-          const newRow = table.insertRow();
-          newRow.innerHTML = `<td>${templateParams.date}</td><td>Virement annulé - ${templateParams.nom}</td><td>+${templateParams.montant} € (annulé)</td><td>Crédit</td>`;
-
-          // Réinitialiser les formulaires
-          document.getElementById('virement-form').reset();
-          document.getElementById('annulation-form').reset();
-          document.getElementById('annulation-section').style.display = 'none';
-        }, function(error) {
-          alert(`Erreur lors de l’envoi de l’email d’annulation : ${error.text}. Vérifiez votre configuration EmailJS ou l’email destinataire.`);
-          console.error('Erreur EmailJS:', error);
-        });
+    reclamerBtn.addEventListener('click', () => {
+      alert('Votre offre a été réclamée avec succès ! Un email de confirmation vous sera envoyé.');
     });
   </script>
 </body>
 </html>
-</DOCUMENT>
